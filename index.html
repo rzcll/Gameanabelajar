@@ -304,11 +304,6 @@
     <!-- Animasi Background Objek Melayang -->
     <div class="bg-floating-objects" id="floating-container"></div>
 
-    <!-- Tombol Kontrol BGM -->
-    <button id="audio-btn" onclick="toggleBGM()" class="fixed top-4 left-4 z-50 bg-white/90 backdrop-blur p-3 rounded-full shadow-lg text-2xl hover:bg-white transition-all transform hover:scale-110 active:scale-95 border-4 border-yellow-300 pop-in flex items-center justify-center w-14 h-14">
-        🔇
-    </button>
-
     <!-- Tombol Fullscreen (Tetap di atas) -->
     <button id="fs-btn" onclick="toggleFullScreen()" class="fixed top-4 right-4 z-50 bg-white/90 backdrop-blur p-3 rounded-full shadow-lg text-2xl hover:bg-white transition-all transform hover:scale-110 active:scale-95 border-4 border-pink-300 pop-in flex items-center justify-center w-14 h-14" style="animation-delay: 0.5s;">
         🔲
@@ -398,6 +393,17 @@
                         <h2 class="text-xl md:text-2xl font-heading text-green-600 mb-3 leading-tight">Dino Berlari</h2>
                         <div class="bg-green-50 w-full py-2 rounded-xl border border-green-100 mt-auto">
                             <p class="text-green-700 font-bold text-sm shrink-0">Lompat rintangan!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Game 9 (Cocokkan Angka) -->
+                <div onclick="switchScreen('screen-game9')" class="menu-card border-cyan-400 pop-in h-full w-full flex flex-col items-center text-center pt-12 p-6" style="animation-delay: 1.0s;">
+                    <div class="card-icon-wrapper bg-cyan-400 text-white text-4xl font-black">🔢</div>
+                    <div class="flex-grow flex flex-col justify-center w-full">
+                        <h2 class="text-xl md:text-2xl font-heading text-cyan-600 mb-3 leading-tight">Cocokkan Angka</h2>
+                        <div class="bg-cyan-50 w-full py-2 rounded-xl border border-cyan-100 mt-auto">
+                            <p class="text-cyan-700 font-bold text-sm shrink-0">Baca dan pilih!</p>
                         </div>
                     </div>
                 </div>
@@ -642,6 +648,32 @@
         </div>
     </div>
 
+    <!-- GAME 9: COCOKKAN ANGKA -->
+    <div id="screen-game9" class="app-screen bg-cyan-50/90 backdrop-blur-sm p-4 md:p-8">
+        <div class="w-full max-w-4xl mx-auto flex justify-between items-center mb-4 md:mb-8 mt-2 md:mt-4">
+            <button onclick="switchScreen('screen-menu')" class="btn-3d bg-white text-gray-800 font-bold py-2 px-4 rounded-full shadow-md border-b-4 border-gray-300 hover:bg-gray-50 flex items-center gap-2">
+                ◀ Kembali
+            </button>
+            <div class="bg-cyan-500 text-white font-heading text-xl py-2 px-6 rounded-full shadow-md border-2 border-cyan-400">
+                ⭐ Skor: <span id="g9-score">0</span>
+            </div>
+        </div>
+
+        <div class="flex-1 w-full flex flex-col items-center justify-center pb-8">
+            <div class="w-full max-w-lg bg-white rounded-3xl p-6 md:p-8 shadow-xl text-center border-b-8 border-cyan-200 flex flex-col items-center">
+                <h2 id="g9-question" class="text-2xl md:text-3xl font-heading text-gray-500 mb-6">Angka berapakah ini?</h2>
+                
+                <div id="g9-display" class="text-7xl font-heading text-cyan-600 mb-8 h-20 flex items-center justify-center transition-transform duration-300">
+                    <!-- Teks atau Angka akan digenerate via JS -->
+                </div>
+
+                <div id="g9-options" class="grid grid-cols-2 gap-4 w-full">
+                    <!-- Tombol digenerate via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- WIN MODAL -->
     <div id="win-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 opacity-0 transition-opacity duration-300">
         <div class="bg-white rounded-3xl p-8 max-w-sm w-[90%] text-center shadow-2xl transform scale-90 transition-transform duration-300 border-8 border-yellow-300" id="win-modal-content">
@@ -758,49 +790,6 @@
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx;
         
-        // Background Music Control
-        let bgmPlaying = false;
-        let hasInteracted = false;
-        const bgmAudio = document.getElementById('bgm-audio');
-        // Set volume BGM lebih pelan agar tidak mengganggu SFX
-        bgmAudio.volume = 0.2;
-
-        function toggleBGM() {
-            playSound('click');
-            const btn = document.getElementById('audio-btn');
-            
-            if (bgmPlaying) {
-                bgmAudio.pause();
-                bgmPlaying = false;
-                btn.innerText = '🔇';
-                btn.classList.replace('border-green-400', 'border-yellow-300');
-            } else {
-                let playPromise = bgmAudio.play();
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                        bgmPlaying = true;
-                        btn.innerText = '🔊';
-                        btn.classList.replace('border-yellow-300', 'border-green-400');
-                    }).catch(err => {
-                        console.log("Audio play di-block oleh browser", err);
-                    });
-                }
-            }
-        }
-
-        // Memaksa musik menyala pada sentuhan/klik pertama di seluruh layar
-        function handleFirstInteraction() {
-            if (hasInteracted) return;
-            hasInteracted = true;
-            initAudio();
-            if (!bgmPlaying) {
-                toggleBGM();
-            }
-        }
-
-        document.body.addEventListener('click', handleFirstInteraction, { once: true });
-        document.body.addEventListener('touchstart', handleFirstInteraction, { once: true });
-
         function initAudio() {
             if (!audioCtx) audioCtx = new AudioContext();
             if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -899,6 +888,7 @@
             if (screenId === 'screen-game6') initGame6();
             if (screenId === 'screen-game7') initGame7();
             if (screenId === 'screen-game8') initGame8();
+            if (screenId === 'screen-game9') initGame9();
         }
 
         // Global Modal Function
@@ -1924,6 +1914,153 @@
             
             // Hapus rintangan yang sudah keluar dari layar kiri
             g8_obstacles = g8_obstacles.filter(o => o.x + o.w > -50);
+        }
+
+        // --- GAME 9 LOGIC: COCOKKAN ANGKA ---
+        
+        // Fungsi untuk mengubah angka menjadi terbilang (Bahasa Indonesia)
+        function terbilang(angka) {
+            const huruf = ["Nol", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"];
+            if (angka < 12) return huruf[angka];
+            if (angka < 20) return terbilang(angka - 10) + " Belas";
+            if (angka < 100) return terbilang(Math.floor(angka / 10)) + " Puluh" + (angka % 10 !== 0 ? " " + terbilang(angka % 10) : "");
+            if (angka === 100) return "Seratus";
+            return angka.toString();
+        }
+
+        let g9_score = 0;
+        let g9_level = 1;
+        let g9_targetNumber = 0;
+        let g9_questionType = ''; // 'word_to_num' atau 'num_to_word'
+        let g9_isAnimating = false;
+
+        function initGame9() {
+            g9_score = 0;
+            g9_level = 1;
+            document.getElementById('g9-score').innerText = g9_score;
+            nextQuestionG9();
+        }
+
+        function nextQuestionG9() {
+            g9_isAnimating = false;
+            
+            // Naik level setiap 50 poin
+            g9_level = Math.floor(g9_score / 50) + 1;
+            
+            // Batas angka sesuai tingkat kesulitan (Level)
+            let maxNum = 10;
+            if (g9_level === 2) maxNum = 20;
+            else if (g9_level === 3) maxNum = 50;
+            else if (g9_level >= 4) maxNum = 100;
+
+            g9_targetNumber = Math.floor(Math.random() * maxNum) + 1; // 1 s.d. maxNum
+            
+            // Acak jenis pertanyaan (50:50)
+            g9_questionType = Math.random() > 0.5 ? 'word_to_num' : 'num_to_word';
+
+            const questionEl = document.getElementById('g9-question');
+            const displayEl = document.getElementById('g9-display');
+            
+            displayEl.classList.remove('pop-in');
+            void displayEl.offsetWidth; // Memicu ulang animasi CSS
+
+            if (g9_questionType === 'word_to_num') {
+                questionEl.innerText = "Angka berapakah ini?";
+                displayEl.innerText = terbilang(g9_targetNumber);
+                displayEl.className = "text-4xl md:text-5xl font-bold text-cyan-600 mb-8 h-20 flex items-center justify-center pop-in text-center px-4 leading-tight";
+            } else {
+                questionEl.innerText = "Apa sebutan angka ini?";
+                displayEl.innerText = g9_targetNumber;
+                displayEl.className = "text-7xl font-heading text-cyan-600 mb-8 h-20 flex items-center justify-center pop-in";
+            }
+
+            generateG9Options();
+        }
+
+        function generateG9Options() {
+            const container = document.getElementById('g9-options');
+            container.innerHTML = '';
+            
+            // Jawaban yang benar
+            let correctOpt = g9_questionType === 'word_to_num' ? g9_targetNumber.toString() : terbilang(g9_targetNumber);
+            let options = [correctOpt];
+
+            // Buat 3 opsi pengecoh
+            while (options.length < 4) {
+                // Jarak pengecoh tidak terlalu jauh dari jawaban benar agar masuk akal
+                let offset = Math.floor(Math.random() * 5) + 1;
+                let wrongNum = Math.random() > 0.5 ? g9_targetNumber + offset : g9_targetNumber - offset;
+                
+                // Pastikan angka pengecoh berada dalam batas 1-100
+                if (wrongNum < 1) wrongNum = wrongNum + offset + 2;
+                if (wrongNum > 100) wrongNum = 100 - offset;
+                
+                let wrongOpt = g9_questionType === 'word_to_num' ? wrongNum.toString() : terbilang(wrongNum);
+                
+                if (!options.includes(wrongOpt)) {
+                    options.push(wrongOpt);
+                }
+            }
+
+            // Acak posisi pilihan ganda
+            options.sort(() => Math.random() - 0.5);
+
+            options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                // Mengubah ukuran font tombol tergantung pada mode pertanyaan (Angka vs Tulisan)
+                let textClass = g9_questionType === 'word_to_num' ? 'text-4xl md:text-5xl font-heading' : 'text-lg md:text-xl font-bold';
+                
+                btn.className = `btn-3d bg-white border-b-8 border-x-2 border-t-2 border-gray-200 text-cyan-700 ${textClass} py-3 px-2 rounded-2xl shadow-sm hover:border-cyan-400 hover:bg-cyan-50 transition-all pop-in flex items-center justify-center text-center min-h-[5rem] leading-tight`;
+                btn.style.animationDelay = `${0.1 * index}s`;
+                btn.innerText = opt;
+                btn.onclick = () => handleG9Answer(opt, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function handleG9Answer(ans, btn) {
+            if (g9_isAnimating) return;
+            g9_isAnimating = true;
+
+            let correctOpt = g9_questionType === 'word_to_num' ? g9_targetNumber.toString() : terbilang(g9_targetNumber);
+            const displayEl = document.getElementById('g9-display');
+
+            if (ans === correctOpt) {
+                playSound('correct');
+                btn.classList.remove('border-gray-200', 'text-cyan-700');
+                btn.classList.add('border-green-500', 'bg-green-100', 'text-green-700');
+                
+                displayEl.classList.add('scale-110', 'text-green-500');
+                
+                g9_score += 10;
+                document.getElementById('g9-score').innerText = g9_score;
+
+                // Tampilkan pesan saat naik level (kelipatan 50)
+                if (g9_score > 0 && g9_score % 50 === 0) {
+                    let levelBaru = Math.floor(g9_score / 50) + 1;
+                    setTimeout(() => showWinModal(`Keren! Kamu mencapai Level ${levelBaru}! Angkanya akan lebih besar sekarang.`, '🌟', () => {
+                        displayEl.classList.remove('scale-110', 'text-green-500');
+                        nextQuestionG9();
+                    }), 800);
+                } else {
+                    setTimeout(() => {
+                        displayEl.classList.remove('scale-110', 'text-green-500');
+                        nextQuestionG9();
+                    }, 1000);
+                }
+            } else {
+                playSound('wrong');
+                btn.classList.remove('border-gray-200', 'text-cyan-700');
+                btn.classList.add('border-red-500', 'bg-red-100', 'text-red-700');
+                
+                displayEl.classList.add('shake');
+                setTimeout(() => {
+                    displayEl.classList.remove('shake');
+                    btn.classList.remove('border-red-500', 'bg-red-100', 'text-red-700');
+                    btn.classList.add('border-gray-200', 'text-cyan-700');
+                    g9_isAnimating = false;
+                }, 500);
+            }
         }
 
     </script>
