@@ -1,0 +1,1931 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Portal Game Edukasi Anak</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            /* Latar belakang gradien animasi ceria */
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 50%, #e0c3fc 100%);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            overscroll-behavior-y: contain;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        h1, h2, h3, .font-heading {
+            font-family: 'Fredoka One', cursive;
+            letter-spacing: 1px;
+        }
+
+        /* Animasi Mengambang Ceria */
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+        }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        
+        @keyframes bounce-soft {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .animate-bounce-soft { animation: bounce-soft 2s infinite; }
+
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            80% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px) rotate(-5deg); }
+            50% { transform: translateX(10px) rotate(5deg); }
+            75% { transform: translateX(-10px) rotate(-5deg); }
+        }
+
+        .pop-in { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .shake { animation: shake 0.4s ease-in-out; }
+
+        .shape-display {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .shape-lingkaran { border-radius: 50%; }
+        .shape-persegi { border-radius: 24px; }
+        .shape-segitiga {
+            background-color: transparent !important;
+            border-left: 70px solid transparent;
+            border-right: 70px solid transparent;
+            border-bottom: 120px solid var(--shape-color, #000);
+            width: 0 !important;
+            height: 0 !important;
+            transform: translateY(10px); /* Penyesuaian agar presisi di tengah vertikal */
+        }
+        .shape-bintang {
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        }
+
+        .memory-card {
+            perspective: 1000px;
+            cursor: pointer;
+        }
+        .memory-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .memory-card.flip .memory-card-inner { transform: rotateY(180deg); }
+        .memory-card.match .memory-card-inner {
+            transform: rotateY(180deg) scale(1.05);
+            animation: pulse-match 1.5s infinite;
+        }
+        .memory-card-front, .memory-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            user-select: none;
+        }
+        .memory-card-back {
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+            color: white;
+            border: 3px solid #fff;
+        }
+        .memory-card-back::after {
+            content: "?";
+            font-family: 'Fredoka One', cursive;
+            font-size: 2rem;
+        }
+        .memory-card-front {
+            background-color: #fff;
+            transform: rotateY(180deg);
+            border: 3px solid #34d399;
+        }
+        @keyframes pulse-match {
+            0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(52, 211, 153, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+        }
+
+        /* Game 3: Bebaskan Panah Styles */
+        @keyframes fly-up { to { transform: translateY(-1000px); opacity: 0; } }
+        @keyframes fly-down { to { transform: translateY(1000px); opacity: 0; } }
+        @keyframes fly-left { to { transform: translateX(-1000px); opacity: 0; } }
+        @keyframes fly-right { to { transform: translateX(1000px); opacity: 0; } }
+        @keyframes wobble {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(-4px, 2px) rotate(-5deg); }
+            50% { transform: translate(4px, -2px) rotate(5deg); }
+            75% { transform: translate(-2px, 4px) rotate(-5deg); }
+        }
+        
+        .anim-fly-up { animation: fly-up 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards !important; z-index: 50; }
+        .anim-fly-down { animation: fly-down 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards !important; z-index: 50; }
+        .anim-fly-left { animation: fly-left 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards !important; z-index: 50; }
+        .anim-fly-right { animation: fly-right 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards !important; z-index: 50; }
+        .anim-wobble { animation: wobble 0.3s ease-in-out; }
+        
+        /* Efek teks tebal seperti stiker */
+        .text-sticker {
+            text-shadow: 
+                -3px -3px 0 #fff, 3px -3px 0 #fff, 
+                -3px 3px 0 #fff, 3px 3px 0 #fff, 
+                0px 5px 10px rgba(0,0,0,0.2);
+        }
+
+        .arrow-block {
+            position: absolute;
+            border-radius: 12px;
+            box-shadow: inset -2px -4px 0px rgba(0,0,0,0.2), 0 4px 6px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.1s;
+            user-select: none;
+            touch-action: manipulation;
+        }
+        .arrow-block:active {
+            box-shadow: inset -1px -1px 0px rgba(0,0,0,0.3);
+            transform: translateY(2px) translateX(1px);
+        }
+        .arrow-block svg {
+            width: 55%;
+            height: 55%;
+            fill: rgba(255, 255, 255, 0.95);
+            pointer-events: none;
+            filter: drop-shadow(1px 2px 1px rgba(0,0,0,0.2));
+        }
+
+        /* --- TAMPILAN MENARIK & FULLSCREEN UTILITIES --- */
+        body {
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            touch-action: pan-y; /* Mencegah pinch-zoom di mobile */
+            overflow-x: hidden;
+        }
+        
+        /* Efek Tombol 3D Bouncy */
+        .btn-3d {
+            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.1s cubic-bezier(0.4, 0, 0.2, 1), filter 0.1s;
+        }
+        .btn-3d:active {
+            transform: translateY(6px) !important;
+            filter: brightness(0.9);
+        }
+
+        /* Animasi Background Objek Melayang */
+        .bg-floating-objects {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .floating-obj {
+            position: absolute;
+            bottom: -100px;
+            font-size: 2rem;
+            animation: floatUp 15s infinite linear;
+            opacity: 0.6;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg) scale(0.8); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-120vh) rotate(360deg) scale(1.2); opacity: 0; }
+        }
+
+        /* Screen Management */
+        .app-screen { 
+            display: none; 
+            width: 100%; 
+            height: 100vh; 
+            height: 100dvh; 
+            overflow-y: auto; 
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch; /* Mengaktifkan smooth scroll di iPhone/iPad */
+        }
+        .app-screen.active { display: flex; flex-direction: column; }
+        
+        /* Menu Utama Scrollable & Card Styles */
+        #screen-menu {
+            overflow-y: auto;
+            /* Menyembunyikan scrollbar tapi tetap bisa di-scroll */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;  /* Internet Explorer 10+ */
+        }
+        #screen-menu::-webkit-scrollbar { 
+            display: none; /* Safari and Chrome */
+        }
+
+        /* Kartu Menu Chunky Playful */
+        .menu-card {
+            background: white;
+            border-radius: 2rem;
+            border: 4px solid #fff;
+            border-bottom-width: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1), inset 0 -4px 0 rgba(0,0,0,0.05);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            margin-top: 2rem; /* Ruang untuk ikon pop-out */
+        }
+        .menu-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 25px rgba(0,0,0,0.15), inset 0 -4px 0 rgba(0,0,0,0.05);
+        }
+        .menu-card:active {
+            transform: translateY(4px);
+            border-bottom-width: 6px;
+            margin-top: calc(2rem + 6px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        }
+        
+        /* Ikon Pop-out di atas kartu */
+        .card-icon-wrapper {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 6px solid #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 10;
+        }
+        .menu-card:hover .card-icon-wrapper {
+            transform: translateX(-50%) scale(1.1) rotate(5deg);
+        }
+
+        /* Audio Control Button */
+        #audio-btn {
+            animation-delay: 0.6s;
+        }
+    </style>
+</head>
+<body class="min-h-screen relative overflow-hidden">
+
+    <!-- Audio BGM Element -->
+    <audio id="bgm-audio" loop preload="auto">
+        <!-- Lagu ceria tanpa hak cipta -->
+        <source src="https://cdn.pixabay.com/audio/2022/10/25/audio_228c2e684d.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Animasi Background Objek Melayang -->
+    <div class="bg-floating-objects" id="floating-container"></div>
+
+    <!-- Tombol Kontrol BGM -->
+    <button id="audio-btn" onclick="toggleBGM()" class="fixed top-4 left-4 z-50 bg-white/90 backdrop-blur p-3 rounded-full shadow-lg text-2xl hover:bg-white transition-all transform hover:scale-110 active:scale-95 border-4 border-yellow-300 pop-in flex items-center justify-center w-14 h-14">
+        🔇
+    </button>
+
+    <!-- Tombol Fullscreen (Tetap di atas) -->
+    <button id="fs-btn" onclick="toggleFullScreen()" class="fixed top-4 right-4 z-50 bg-white/90 backdrop-blur p-3 rounded-full shadow-lg text-2xl hover:bg-white transition-all transform hover:scale-110 active:scale-95 border-4 border-pink-300 pop-in flex items-center justify-center w-14 h-14" style="animation-delay: 0.5s;">
+        🔲
+    </button>
+
+    <!-- MENU UTAMA -->
+    <div id="screen-menu" class="app-screen active">
+        <div class="w-full max-w-7xl mx-auto flex flex-col items-center justify-start min-h-max py-12 px-4 pt-24 pb-32">
+            <header class="text-center mb-16 pop-in flex flex-col items-center" style="animation-delay: 0.1s;">
+                <div class="inline-flex items-center justify-center bg-white w-28 h-28 rounded-[2rem] shadow-xl mb-4 transform -rotate-3 animate-float border-4 border-yellow-300">
+                    <span class="text-7xl">🎪</span>
+                </div>
+                <h1 class="text-5xl md:text-6xl text-purple-600 mb-2 text-sticker animate-bounce-soft">Dunia Bermain</h1>
+                <p class="text-lg font-bold text-gray-600 bg-white/90 inline-block px-6 py-2 rounded-full mt-2 shadow-sm border-2 border-dashed border-purple-300">Pilih permainanmu hari ini!</p>
+            </header>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-14 w-full auto-rows-fr justify-items-center pb-32">
+                <!-- Card Game 1 -->
+                <div onclick="switchScreen('screen-game1')" class="menu-card border-yellow-400 pop-in h-full w-full max-w-sm flex flex-col items-center text-center pt-12 p-6" style="animation-delay: 0.2s;">
+                    <div class="card-icon-wrapper bg-yellow-400">🎨</div>
+                    <h2 class="text-xl md:text-2xl font-heading text-yellow-500 mb-3 leading-tight flex-grow flex items-center justify-center">Tebak Bentuk & Warna</h2>
+                    <div class="bg-yellow-50 w-full py-2 rounded-xl border border-yellow-100">
+                        <p class="text-yellow-700 font-bold text-sm shrink-0">Latih konsentrasi!</p>
+                    </div>
+                </div>
+
+                <!-- Card Game 2 -->
+                <div onclick="switchScreen('screen-game2')" class="menu-card border-blue-400 pop-in h-full w-full max-w-sm flex flex-col items-center text-center pt-12 p-6" style="animation-delay: 0.3s;">
+                    <div class="card-icon-wrapper bg-blue-400">🦁</div>
+                    <h2 class="text-xl md:text-2xl font-heading text-blue-500 mb-3 leading-tight flex-grow flex items-center justify-center">Memori Hewan</h2>
+                    <div class="bg-blue-50 w-full py-2 rounded-xl border border-blue-100">
+                        <p class="text-blue-700 font-bold text-sm shrink-0">Cari pasangannya!</p>
+                    </div>
+                </div>
+
+                <!-- Card Game 3 -->
+                <div onclick="switchScreen('screen-game3')" class="menu-card border-purple-500 pop-in h-full w-full max-w-sm flex flex-col items-center text-center pt-12 p-6" style="animation-delay: 0.4s;">
+                    <div class="card-icon-wrapper bg-purple-500 text-white font-black">⬆️</div>
+                    <h2 class="text-xl md:text-2xl font-heading text-purple-600 mb-3 leading-tight flex-grow flex items-center justify-center">Bebaskan Panah</h2>
+                    <div class="bg-purple-50 w-full py-2 rounded-xl border border-purple-100">
+                        <p class="text-purple-700 font-bold text-sm shrink-0">Ketuk agar lepas!</p>
+                    </div>
+                </div>
+
+                <!-- Card Game 4 -->
+                <div onclick="switchScreen('screen-game4')" class="menu-card border-orange-400 pop-in h-full w-full max-w-sm flex flex-col items-center text-center pt-12 p-6" style="animation-delay: 0.5s;">
+                    <div class="card-icon-wrapper bg-orange-400 text-white text-3xl font-black">+</div>
+                    <h2 class="text-xl md:text-2xl font-heading text-orange-500 mb-3 leading-tight flex-grow flex items-center justify-center">Berhitung Ceria</h2>
+                    <div class="bg-orange-50 w-full py-2 rounded-xl border border-orange-100">
+                        <p class="text-orange-700 font-bold text-sm shrink-0">Belajar tambah!</p>
+                    </div>
+                </div>
+
+                <!-- Card Game 5 (Pengurangan) -->
+                <div onclick="switchScreen('screen-game5')" class="menu-card border-rose-400 pop-in h-full w-full max-w-sm flex flex-col items-center text-center pt-12 p-6" style="animation-delay: 0.6s;">
+                    <div class="card-icon-wrapper bg-rose-400 text-white text-4xl font-black">-</div>
+                    <h2 class="text-xl md:text-2xl font-heading text-rose-500 mb-3 leading-tight flex-grow flex items-center justify-center">Pengurangan</h2>
+                    <div class="bg-rose-50 w-full py-2 rounded-xl border border-rose-100">
+                        <p class="text-rose-700 font-bold text-sm shrink-0">Hitung sisanya!</p>
+                    </div>
+                </div>
+
+                <!-- Card Game 6 (Perkalian) -->
+                <div onclick="switchScreen('screen-game6')" class="menu-card border-indigo-400 pop-in h-full w-full max-w-sm flex flex-col items-center text-center pt-12 p-6" style="animation-delay: 0.7s;">
+                    <div class="card-icon-wrapper bg-indigo-400 text-white text-3xl font-black">✖️</div>
+                    <h2 class="text-xl md:text-2xl font-heading text-indigo-500 mb-3 leading-tight flex-grow flex items-center justify-center">Perkalian Seru</h2>
+                    <div class="bg-indigo-50 w-full py-2 rounded-xl border border-indigo-100">
+                        <p class="text-indigo-700 font-bold text-sm shrink-0">Hitung totalnya!</p>
+                    </div>
+                </div>
+
+                <!-- Card Game 7 (Pembagian) -->
+                <div onclick="switchScreen('screen-game7')" class="menu-card border-teal-400 pop-in h-full w-full flex flex-col items-center text-center pt-12 p-6" style="animation-delay: 0.8s;">
+                    <div class="card-icon-wrapper bg-teal-400 text-white text-4xl font-black">➗</div>
+                    <div class="flex-grow flex flex-col justify-center w-full">
+                        <h2 class="text-xl md:text-2xl font-heading text-teal-600 mb-3 leading-tight">Berbagi Adil</h2>
+                        <div class="bg-teal-50 w-full py-2 rounded-xl border border-teal-100 mt-auto">
+                            <p class="text-teal-700 font-bold text-sm shrink-0">Bagi rata kuenya!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Game 8 (Dino Berlari) -->
+                <div onclick="switchScreen('screen-game8')" class="menu-card border-green-500 pop-in h-full w-full flex flex-col items-center text-center pt-12 p-6" style="animation-delay: 0.9s;">
+                    <div class="card-icon-wrapper bg-green-500 text-white text-4xl font-black">🦖</div>
+                    <div class="flex-grow flex flex-col justify-center w-full">
+                        <h2 class="text-xl md:text-2xl font-heading text-green-600 mb-3 leading-tight">Dino Berlari</h2>
+                        <div class="bg-green-50 w-full py-2 rounded-xl border border-green-100 mt-auto">
+                            <p class="text-green-700 font-bold text-sm shrink-0">Lompat rintangan!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GAME 1: TEBAK BENTUK & WARNA -->
+    <div id="screen-game1" class="app-screen bg-yellow-50/90 backdrop-blur-sm p-4 md:p-8">
+        <div class="w-full max-w-4xl mx-auto flex justify-between items-center mb-4 md:mb-8 mt-2 md:mt-4">
+            <button onclick="switchScreen('screen-menu')" class="btn-3d bg-white text-gray-800 font-bold py-2 px-4 rounded-full shadow-md border-b-4 border-gray-300 hover:bg-gray-50 flex items-center gap-2">
+                ◀ Kembali
+            </button>
+            <div class="bg-yellow-400 text-white font-heading text-xl py-2 px-6 rounded-full shadow-md border-2 border-yellow-500">
+                ⭐ Skor: <span id="g1-score">0</span>
+            </div>
+        </div>
+
+        <div class="flex-1 w-full flex flex-col items-center justify-center pb-8">
+            <div class="w-full max-w-lg bg-white rounded-3xl p-6 md:p-8 shadow-xl text-center border-b-8 border-yellow-200 flex flex-col items-center">
+                <h2 id="g1-question" class="text-3xl md:text-4xl font-heading mb-8 h-16 flex items-center justify-center text-pink-600">Bentuk apakah ini?</h2>
+                
+                <div class="mb-10 flex justify-center items-center min-h-[150px] w-full">
+                    <div id="g1-shape" class="w-32 h-32 shape-display"></div>
+                </div>
+
+                <div id="g1-options" class="grid grid-cols-2 gap-4 w-full">
+                    <!-- Tombol digenerate via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GAME 2: MEMORI HEWAN -->
+    <div id="screen-game2" class="app-screen bg-green-50/80 backdrop-blur-sm p-4 md:p-8">
+        <!-- Top Bar -->
+        <div class="w-full max-w-4xl mx-auto flex justify-between items-center mb-4 md:mb-8 mt-2 md:mt-4">
+            <button onclick="switchScreen('screen-menu')" class="btn-3d bg-white text-gray-800 font-bold py-2 px-4 rounded-full shadow-md border-b-4 border-gray-300 hover:bg-gray-50 flex items-center gap-2">
+                ◀ Kembali
+            </button>
+            <div class="bg-pink-400 text-white font-heading text-xl py-2 px-6 rounded-full shadow-md border-2 border-pink-500">
+                Langkah: <span id="g2-moves">0</span>
+            </div>
+        </div>
+
+        <div class="flex-1 w-full flex flex-col items-center justify-center pb-8">
+            <div class="w-full max-w-lg text-center mb-4">
+                <h2 class="text-3xl font-heading text-green-600">Cocokkan Hewannya!</h2>
+            </div>
+
+            <main class="w-full max-w-md mx-auto flex flex-col items-center">
+                <div id="g2-board" class="grid grid-cols-4 gap-3 md:gap-4 w-full aspect-square bg-white p-4 md:p-5 rounded-3xl shadow-xl border-b-8 border-green-200">
+                    <!-- Kartu digenerate via JS -->
+                </div>
+                
+                <div class="mt-8 text-center w-full">
+                    <button onclick="initGame2()" class="btn-3d bg-white text-green-600 font-bold py-3 px-8 rounded-full shadow-md border-b-4 border-green-300 hover:bg-green-50 transition-colors">
+                        🔄 Ulangi Game
+                    </button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- GAME 3: BEBASKAN PANAH -->
+    <div id="screen-game3" class="app-screen bg-purple-100/80 backdrop-blur-sm p-4 md:p-8">
+        <!-- Top Bar -->
+        <div class="w-full max-w-4xl mx-auto flex justify-between items-center mb-4 md:mb-8 mt-2 md:mt-4">
+            <button onclick="switchScreen('screen-menu')" class="btn-3d bg-white text-gray-800 font-bold py-2 px-4 rounded-full shadow-md border-b-4 border-gray-300 hover:bg-gray-50 flex items-center gap-2">
+                ◀ Kembali
+            </button>
+            <div class="bg-purple-500 text-white font-heading text-xl py-2 px-6 rounded-full shadow-md border-2 border-purple-400">
+                🌟 Level: <span id="g3-level">1</span>
+            </div>
+        </div>
+
+        <div class="flex-1 w-full flex flex-col items-center justify-center pb-8">
+            <div class="w-full max-w-lg text-center mb-4 md:mb-6">
+                <h2 class="text-2xl md:text-3xl font-heading text-purple-700">Arahkan panah keluar!</h2>
+            </div>
+
+            <main class="w-full max-w-md mx-auto flex flex-col items-center">
+                <!-- Papan Permainan -->
+                <div id="g3-board-container" class="bg-[#1e1b4b] p-3 md:p-4 rounded-3xl shadow-xl border-b-8 border-purple-900 inline-flex justify-center items-center relative overflow-hidden">
+                    <div id="g3-board" class="relative">
+                        <!-- Balok digenerate via JS -->
+                    </div>
+                </div>
+                
+                <div class="mt-6 text-center w-full">
+                    <button onclick="initGame3()" class="btn-3d bg-white text-purple-600 font-bold py-3 px-8 rounded-full shadow-md border-b-4 border-purple-300 hover:bg-purple-50 transition-colors">
+                        🔄 Ulangi Level
+                    </button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- GAME 4: BERHITUNG CERIA (PENJUMLAHAN) -->
+    <div id="screen-game4" class="app-screen bg-orange-50/90 backdrop-blur-sm p-4 md:p-8">
+        <!-- Top Bar -->
+        <div class="w-full max-w-4xl mx-auto flex justify-between items-center mb-4 md:mb-8 mt-2 md:mt-4">
+            <button onclick="switchScreen('screen-menu')" class="btn-3d bg-white text-gray-800 font-bold py-2 px-4 rounded-full shadow-md border-b-4 border-gray-300 hover:bg-gray-50 flex items-center gap-2">
+                ◀ Kembali
+            </button>
+            <div class="bg-orange-400 text-white font-heading text-xl py-2 px-6 rounded-full shadow-md border-2 border-orange-500">
+                ⭐ Skor: <span id="g4-score">0</span>
+            </div>
+        </div>
+
+        <div class="flex-1 w-full flex flex-col items-center justify-center pb-8">
+            <div class="w-full max-w-lg bg-white rounded-3xl p-6 md:p-8 shadow-xl text-center border-b-8 border-orange-200 flex flex-col items-center">
+                <h2 class="text-2xl font-heading text-orange-600 mb-6">Berapa jumlah buahnya?</h2>
+                
+                <!-- Area Visual Buah -->
+                <div id="g4-visual" class="flex items-center justify-center flex-wrap gap-2 text-3xl md:text-4xl mb-6 min-h-[4rem] bg-orange-50 w-full py-4 rounded-2xl inner-shadow border-2 border-orange-100">
+                    <!-- Visual buah digenerate via JS -->
+                </div>
+
+                <!-- Persamaan Matematika -->
+                <div id="g4-equation" class="text-5xl md:text-6xl font-heading text-gray-700 mb-8 transition-transform duration-300">
+                    1 + 1 = ?
+                </div>
+
+                <!-- Tombol Jawaban -->
+                <div id="g4-options" class="grid grid-cols-2 gap-4 w-full">
+                    <!-- Tombol digenerate via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GAME 5: PENGURANGAN -->
+    <div id="screen-game5" class="app-screen bg-rose-50/90 backdrop-blur-sm p-4 md:p-8">
+        <div class="w-full max-w-4xl mx-auto flex justify-between items-center mb-4 md:mb-8 mt-2 md:mt-4">
+            <button onclick="switchScreen('screen-menu')" class="btn-3d bg-white text-gray-800 font-bold py-2 px-4 rounded-full shadow-md border-b-4 border-gray-300 hover:bg-gray-50 flex items-center gap-2">
+                ◀ Kembali
+            </button>
+            <div class="bg-rose-400 text-white font-heading text-xl py-2 px-6 rounded-full shadow-md border-2 border-rose-500">
+                ⭐ Skor: <span id="g5-score">0</span>
+            </div>
+        </div>
+
+        <div class="flex-1 w-full flex flex-col items-center justify-center pb-8">
+            <div class="w-full max-w-lg bg-white rounded-3xl p-6 md:p-8 shadow-xl text-center border-b-8 border-rose-200 flex flex-col items-center">
+                <h2 class="text-2xl font-heading text-rose-600 mb-6">Hitung sisa objeknya!</h2>
+                <div id="g5-visual" class="flex items-center justify-center flex-wrap gap-2 text-3xl md:text-4xl mb-6 min-h-[4rem] bg-rose-50 w-full py-4 rounded-2xl inner-shadow border-2 border-rose-100">
+                    <!-- Visual digenerate via JS -->
+                </div>
+                <div id="g5-equation" class="text-5xl md:text-6xl font-heading text-gray-700 mb-8 transition-transform duration-300">
+                    2 - 1 = ?
+                </div>
+                <div id="g5-options" class="grid grid-cols-2 gap-4 w-full">
+                    <!-- Tombol digenerate via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GAME 6: PERKALIAN -->
+    <div id="screen-game6" class="app-screen bg-indigo-50/90 backdrop-blur-sm p-4 md:p-8">
+        <div class="w-full max-w-4xl mx-auto flex justify-between items-center mb-4 md:mb-8 mt-2 md:mt-4">
+            <button onclick="switchScreen('screen-menu')" class="btn-3d bg-white text-gray-800 font-bold py-2 px-4 rounded-full shadow-md border-b-4 border-gray-300 hover:bg-gray-50 flex items-center gap-2">
+                ◀ Kembali
+            </button>
+            <div class="bg-indigo-400 text-white font-heading text-xl py-2 px-6 rounded-full shadow-md border-2 border-indigo-500">
+                ⭐ Skor: <span id="g6-score">0</span>
+            </div>
+        </div>
+
+        <div class="flex-1 w-full flex flex-col items-center justify-center pb-8">
+            <div class="w-full max-w-lg bg-white rounded-3xl p-6 md:p-8 shadow-xl text-center border-b-8 border-indigo-200 flex flex-col items-center">
+                <h2 class="text-2xl font-heading text-indigo-600 mb-6">Ada berapa totalnya?</h2>
+                <div id="g6-visual" class="flex flex-wrap items-center justify-center gap-4 mb-6 min-h-[4rem] bg-indigo-50 w-full py-4 rounded-2xl inner-shadow border-2 border-indigo-100">
+                    <!-- Visual digenerate via JS -->
+                </div>
+                <div id="g6-equation" class="text-5xl md:text-6xl font-heading text-gray-700 mb-8 transition-transform duration-300">
+                    2 x 3 = ?
+                </div>
+                <div id="g6-options" class="grid grid-cols-2 gap-4 w-full">
+                    <!-- Tombol digenerate via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GAME 7: PEMBAGIAN -->
+    <div id="screen-game7" class="app-screen bg-teal-50/90 backdrop-blur-sm p-4 md:p-8">
+        <div class="w-full max-w-4xl mx-auto flex justify-between items-center mb-4 md:mb-8 mt-2 md:mt-4">
+            <button onclick="switchScreen('screen-menu')" class="btn-3d bg-white text-gray-800 font-bold py-2 px-4 rounded-full shadow-md border-b-4 border-gray-300 hover:bg-gray-50 flex items-center gap-2">
+                ◀ Kembali
+            </button>
+            <div class="bg-teal-400 text-white font-heading text-xl py-2 px-6 rounded-full shadow-md border-2 border-teal-500">
+                ⭐ Skor: <span id="g7-score">0</span>
+            </div>
+        </div>
+        
+        <div class="flex-1 w-full flex flex-col items-center justify-center pb-8">
+            <div class="w-full max-w-lg bg-white rounded-3xl p-6 md:p-8 shadow-xl text-center border-b-8 border-teal-200 flex flex-col items-center">
+                <h2 class="text-2xl md:text-3xl font-heading text-teal-600 mb-6">Berapa bagian masing-masing?</h2>
+                <div id="g7-visual" class="flex flex-col items-center justify-center gap-4 mb-6 min-h-[4rem] bg-teal-50 w-full py-4 px-2 rounded-2xl inner-shadow border-2 border-teal-100">
+                    <!-- Visual digenerate via JS -->
+                </div>
+                <div id="g7-equation" class="text-5xl md:text-6xl font-heading text-gray-700 mb-8 transition-transform duration-300">
+                    4 ÷ 2 = ?
+                </div>
+                <div id="g7-options" class="grid grid-cols-2 gap-4 w-full">
+                    <!-- Tombol digenerate via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GAME 8: DINO BERLARI -->
+    <div id="screen-game8" class="app-screen bg-sky-100/90 backdrop-blur-sm p-4 md:p-8 select-none">
+        <div class="w-full max-w-4xl mx-auto flex justify-between items-center mb-4 md:mb-8 mt-2 md:mt-4">
+            <button onclick="switchScreen('screen-menu'); event.stopPropagation();" class="btn-3d bg-white text-gray-800 font-bold py-2 px-4 rounded-full shadow-md border-b-4 border-gray-300 hover:bg-gray-50 flex items-center gap-2 relative z-10">
+                ◀ Kembali
+            </button>
+            <div class="bg-green-500 text-white font-heading text-xl py-2 px-6 rounded-full shadow-md border-2 border-green-400 relative z-10">
+                ⭐ Skor: <span id="g8-score">0</span>
+            </div>
+        </div>
+
+        <div class="flex-1 w-full flex flex-col items-center justify-center pb-8 pointer-events-none">
+            <div class="w-full max-w-3xl text-center mb-4">
+                <h2 class="text-2xl md:text-3xl font-heading text-green-700 drop-shadow-sm mb-2">Bantu Dino Melompat!</h2>
+                <p class="text-gray-600 font-bold bg-white/70 inline-block px-4 py-1 rounded-full text-sm">Ketuk tombol di bawah untuk melompat</p>
+            </div>
+
+            <!-- Canvas Area -->
+            <div class="w-full max-w-3xl aspect-[8/3] bg-white rounded-3xl shadow-xl border-b-8 border-green-300 overflow-hidden relative pointer-events-auto cursor-pointer" onmousedown="g8_jump()" ontouchstart="g8_jump(); event.preventDefault();">
+                <canvas id="dino-canvas" class="w-full h-full block"></canvas>
+            </div>
+
+            <!-- Tombol Loncat -->
+            <div class="w-full max-w-3xl flex justify-center mt-6 pointer-events-auto">
+                <button onmousedown="g8_jump()" ontouchstart="g8_jump(); event.preventDefault();" class="btn-3d w-full max-w-xs md:max-w-md bg-orange-500 hover:bg-orange-400 text-white font-heading text-3xl md:text-4xl py-4 rounded-full border-b-8 border-orange-700 active:border-b-0 shadow-xl flex items-center justify-center gap-2 transition-all">
+                    ⬆️ LONCAT!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- WIN MODAL -->
+    <div id="win-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-[90%] text-center shadow-2xl transform scale-90 transition-transform duration-300 border-8 border-yellow-300" id="win-modal-content">
+            <div class="text-7xl mb-4" id="win-icon">🏆</div>
+            <h2 class="font-heading text-4xl text-yellow-500 mb-2">Hebat!</h2>
+            <p id="win-message" class="text-xl text-gray-600 font-bold mb-6">Kamu berhasil!</p>
+            <button onclick="closeModal()" class="btn-3d w-full bg-blue-500 hover:bg-blue-400 text-white font-heading text-2xl py-4 rounded-2xl border-b-8 border-blue-700 active:border-b-0">
+                Lanjut Main
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- ANIMASI BACKGROUND FLOATING OBJECTS ---
+        function createFloatingObjects() {
+            const container = document.getElementById('floating-container');
+            const emojis = ['⭐', '☁️', '🎈', '✨', '🎵', '🫧'];
+            for(let i=0; i<15; i++) {
+                let obj = document.createElement('div');
+                obj.className = 'floating-obj';
+                obj.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                obj.style.left = `${Math.random() * 100}%`;
+                obj.style.animationDuration = `${Math.random() * 10 + 10}s`; // Durasi 10s - 20s
+                obj.style.animationDelay = `${Math.random() * 10}s`;
+                // Variasi ukuran
+                const scale = Math.random() * 1.5 + 0.5;
+                obj.style.transform = `scale(${scale})`;
+                container.appendChild(obj);
+            }
+        }
+        createFloatingObjects();
+
+        // --- FULLSCREEN SYSTEM ---
+        function toggleFullScreen() {
+            playSound('click');
+            const elem = document.documentElement;
+            const btn = document.getElementById('fs-btn');
+            
+            try {
+                if (!document.fullscreenElement) {
+                    let fsPromise;
+                    if (elem.requestFullscreen) {
+                        fsPromise = elem.requestFullscreen();
+                    } else if (elem.webkitRequestFullscreen) { /* Safari */
+                        fsPromise = elem.webkitRequestFullscreen();
+                    } else if (elem.msRequestFullscreen) { /* IE11 */
+                        fsPromise = elem.msRequestFullscreen();
+                    }
+
+                    // Menangkap error Promise (Asinkronus)
+                    if (fsPromise !== undefined) {
+                        fsPromise.then(() => {
+                            btn.innerText = '🔳';
+                            btn.classList.replace('border-pink-300', 'border-blue-400');
+                        }).catch(err => {
+                            handleFullscreenError(btn, err);
+                        });
+                    } else {
+                        btn.innerText = '🔳';
+                        btn.classList.replace('border-pink-300', 'border-blue-400');
+                    }
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) { /* Safari */
+                        document.webkitExitFullscreen();
+                    } else if (document.msExitFullscreen) { /* IE11 */
+                        document.msExitFullscreen();
+                    }
+                    btn.innerText = '🔲';
+                    btn.classList.replace('border-blue-400', 'border-pink-300');
+                }
+            } catch (err) {
+                // Menangkap error TypeError policy (Sinkronus)
+                handleFullscreenError(btn, err);
+            }
+        }
+
+        function handleFullscreenError(btn, err) {
+            console.warn(`Mode layar penuh diblokir oleh sistem pratinjau: ${err.message}`);
+            // Beri efek getar agar anak tahu tombol bereaksi tapi tidak bisa dieksekusi
+            btn.classList.add('shake');
+            setTimeout(() => btn.classList.remove('shake'), 400);
+            
+            // Tampilkan notifikasi kecil ramah anak
+            showNotification('Mode Layar Penuh belum bisa digunakan di layar ini. 😅');
+        }
+
+        function showNotification(message) {
+            const msg = document.createElement('div');
+            msg.className = 'fixed top-24 right-4 bg-yellow-400 text-yellow-900 px-5 py-3 rounded-2xl shadow-xl z-50 pop-in text-sm font-bold border-4 border-white';
+            msg.innerText = message;
+            document.body.appendChild(msg);
+            
+            // Menghilangkan notifikasi setelah 3 detik
+            setTimeout(() => {
+                msg.style.opacity = '0';
+                msg.style.transform = 'translateY(-10px)';
+                msg.style.transition = 'all 0.5s ease-out';
+                setTimeout(() => msg.remove(), 500);
+            }, 3000);
+        }
+
+        // Listener jika tombol Escape ditekan untuk keluar Fullscreen
+        document.addEventListener('fullscreenchange', () => {
+            const btn = document.getElementById('fs-btn');
+            if (!document.fullscreenElement) {
+                btn.innerText = '🔲';
+                btn.classList.replace('border-blue-400', 'border-pink-300');
+            }
+        });
+
+        // --- AUDIO SYSTEM ---
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+        
+        // Background Music Control
+        let bgmPlaying = false;
+        let hasInteracted = false;
+        const bgmAudio = document.getElementById('bgm-audio');
+        // Set volume BGM lebih pelan agar tidak mengganggu SFX
+        bgmAudio.volume = 0.2;
+
+        function toggleBGM() {
+            playSound('click');
+            const btn = document.getElementById('audio-btn');
+            
+            if (bgmPlaying) {
+                bgmAudio.pause();
+                bgmPlaying = false;
+                btn.innerText = '🔇';
+                btn.classList.replace('border-green-400', 'border-yellow-300');
+            } else {
+                let playPromise = bgmAudio.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        bgmPlaying = true;
+                        btn.innerText = '🔊';
+                        btn.classList.replace('border-yellow-300', 'border-green-400');
+                    }).catch(err => {
+                        console.log("Audio play di-block oleh browser", err);
+                    });
+                }
+            }
+        }
+
+        // Memaksa musik menyala pada sentuhan/klik pertama di seluruh layar
+        function handleFirstInteraction() {
+            if (hasInteracted) return;
+            hasInteracted = true;
+            initAudio();
+            if (!bgmPlaying) {
+                toggleBGM();
+            }
+        }
+
+        document.body.addEventListener('click', handleFirstInteraction, { once: true });
+        document.body.addEventListener('touchstart', handleFirstInteraction, { once: true });
+
+        function initAudio() {
+            if (!audioCtx) audioCtx = new AudioContext();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playSound(type) {
+            initAudio();
+            if (!audioCtx) return;
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+
+            if (type === 'click' || type === 'flip') {
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(400, now);
+                oscillator.frequency.exponentialRampToValueAtTime(600, now + 0.1);
+                gainNode.gain.setValueAtTime(0.3, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                oscillator.start(now);
+                oscillator.stop(now + 0.1);
+            } else if (type === 'correct' || type === 'match') {
+                oscillator.type = 'triangle';
+                oscillator.frequency.setValueAtTime(500, now);
+                oscillator.frequency.setValueAtTime(800, now + 0.1);
+                gainNode.gain.setValueAtTime(0.2, now);
+                gainNode.gain.linearRampToValueAtTime(0, now + 0.3);
+                oscillator.start(now);
+                oscillator.stop(now + 0.3);
+            } else if (type === 'wrong') {
+                oscillator.type = 'sawtooth';
+                oscillator.frequency.setValueAtTime(300, now);
+                oscillator.frequency.exponentialRampToValueAtTime(150, now + 0.3);
+                gainNode.gain.setValueAtTime(0.2, now);
+                gainNode.gain.linearRampToValueAtTime(0, now + 0.3);
+                oscillator.start(now);
+                oscillator.stop(now + 0.3);
+            } else if (type === 'swoosh') {
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(500, now);
+                oscillator.frequency.exponentialRampToValueAtTime(100, now + 0.2);
+                gainNode.gain.setValueAtTime(0.2, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                oscillator.start(now);
+                oscillator.stop(now + 0.2);
+            } else if (type === 'bump') {
+                oscillator.type = 'triangle';
+                oscillator.frequency.setValueAtTime(150, now);
+                oscillator.frequency.exponentialRampToValueAtTime(80, now + 0.15);
+                gainNode.gain.setValueAtTime(0.4, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+                oscillator.start(now);
+                oscillator.stop(now + 0.15);
+            } else if (type === 'win') {
+                oscillator.type = 'square';
+                oscillator.frequency.setValueAtTime(400, now);
+                oscillator.frequency.setValueAtTime(523.25, now + 0.1); // C5
+                oscillator.frequency.setValueAtTime(659.25, now + 0.2); // E5
+                oscillator.frequency.setValueAtTime(783.99, now + 0.3); // G5
+                oscillator.frequency.setValueAtTime(1046.50, now + 0.4); // C6
+                gainNode.gain.setValueAtTime(0.15, now);
+                gainNode.gain.linearRampToValueAtTime(0, now + 0.8);
+                oscillator.start(now);
+                oscillator.stop(now + 0.8);
+            }
+        }
+
+        // --- NAVIGATION SYSTEM ---
+        let currentActiveScreen = 'screen-menu';
+        
+        function switchScreen(screenId) {
+            playSound('click');
+            
+            // Hentikan loop animasi Game 8 jika keluar dari game tersebut
+            if (currentActiveScreen === 'screen-game8' && screenId !== 'screen-game8') {
+                if (g8_animId) cancelAnimationFrame(g8_animId);
+            }
+            
+            const targetScreen = document.getElementById(screenId);
+            if (!targetScreen) {
+                console.error('Layar tidak ditemukan:', screenId);
+                return; 
+            }
+
+            document.querySelectorAll('.app-screen').forEach(el => el.classList.remove('active'));
+            targetScreen.classList.add('active');
+            currentActiveScreen = screenId;
+
+            if (screenId === 'screen-game1') initGame1();
+            if (screenId === 'screen-game2') initGame2();
+            if (screenId === 'screen-game3') initGame3();
+            if (screenId === 'screen-game4') initGame4();
+            if (screenId === 'screen-game5') initGame5();
+            if (screenId === 'screen-game6') initGame6();
+            if (screenId === 'screen-game7') initGame7();
+            if (screenId === 'screen-game8') initGame8();
+        }
+
+        // Global Modal Function
+        const winModal = document.getElementById('win-modal');
+        const winContent = document.getElementById('win-modal-content');
+        
+        function showWinModal(message, icon = '🏆', callback = null) {
+            playSound('win');
+            document.getElementById('win-message').innerHTML = message;
+            document.getElementById('win-icon').innerText = icon;
+            
+            winModal.classList.remove('hidden');
+            winModal.classList.add('flex');
+            // Trigger reflow
+            void winModal.offsetWidth;
+            
+            winModal.classList.remove('opacity-0');
+            winContent.classList.remove('scale-90');
+            
+            winModal.callback = callback;
+        }
+
+        function closeModal() {
+            playSound('click');
+            winModal.classList.add('opacity-0');
+            winContent.classList.add('scale-90');
+            
+            setTimeout(() => {
+                winModal.classList.add('hidden');
+                winModal.classList.remove('flex');
+                if (typeof winModal.callback === 'function') {
+                    winModal.callback();
+                }
+            }, 300);
+        }
+
+        // Helper untuk interaksi pertama
+        document.body.addEventListener('click', initAudio, { once: true });
+
+        // --- GAME 1 LOGIC: TEBAK BENTUK & WARNA ---
+        const g1_shapes = [
+            { id: 'lingkaran', name: 'Lingkaran', class: 'shape-lingkaran' },
+            { id: 'persegi', name: 'Persegi', class: 'shape-persegi' },
+            { id: 'segitiga', name: 'Segitiga', class: 'shape-segitiga' },
+            { id: 'bintang', name: 'Bintang', class: 'shape-bintang' }
+        ];
+        const g1_colors = [
+            { id: 'merah', name: 'Merah', hex: '#ef4444' }, // Tailwind red-500
+            { id: 'biru', name: 'Biru', hex: '#3b82f6' },   // Tailwind blue-500
+            { id: 'hijau', name: 'Hijau', hex: '#22c55e' },  // Tailwind green-500
+            { id: 'kuning', name: 'Kuning', hex: '#eab308' },// Tailwind yellow-500
+            { id: 'ungu', name: 'Ungu', hex: '#a855f7' }    // Tailwind purple-500
+        ];
+
+        let g1_score = 0;
+        let g1_currentTarget = {};
+        let g1_questionType = ''; // 'color' or 'shape'
+        let g1_isAnimating = false;
+
+        function initGame1() {
+            g1_score = 0;
+            updateG1Score();
+            nextQuestionG1();
+        }
+
+        function updateG1Score() {
+            document.getElementById('g1-score').innerText = g1_score;
+        }
+
+        function nextQuestionG1() {
+            g1_isAnimating = false;
+            
+            // Randomly decide if asking for Color or Shape (50/50 chance)
+            g1_questionType = Math.random() > 0.5 ? 'color' : 'shape';
+            
+            // Pick random target
+            const shapeObj = g1_shapes[Math.floor(Math.random() * g1_shapes.length)];
+            const colorObj = g1_colors[Math.floor(Math.random() * g1_colors.length)];
+            
+            g1_currentTarget = { shape: shapeObj, color: colorObj };
+
+            // Update UI
+            const questionEl = document.getElementById('g1-question');
+            questionEl.classList.remove('pop-in');
+            void questionEl.offsetWidth; // trigger reflow
+            
+            if (g1_questionType === 'color') {
+                questionEl.innerText = "Warna apakah ini?";
+                questionEl.className = "text-3xl md:text-4xl font-heading mb-8 h-16 flex items-center justify-center pop-in text-pink-600";
+            } else {
+                questionEl.innerText = "Bentuk apakah ini?";
+                questionEl.className = "text-3xl md:text-4xl font-heading mb-8 h-16 flex items-center justify-center pop-in text-indigo-600";
+            }
+
+            const shapeEl = document.getElementById('g1-shape');
+            // Reset classes, maintain base animation class
+            shapeEl.className = `w-32 h-32 shape-display pop-in ${shapeObj.class}`;
+            
+            // Apply color (special handling for border-based triangle)
+            if (shapeObj.id === 'segitiga') {
+                shapeEl.style.backgroundColor = 'transparent';
+                shapeEl.style.setProperty('--shape-color', colorObj.hex);
+            } else {
+                shapeEl.style.backgroundColor = colorObj.hex;
+                shapeEl.style.removeProperty('--shape-color');
+            }
+
+            generateG1Options();
+        }
+
+        function generateG1Options() {
+            const optionsContainer = document.getElementById('g1-options');
+            optionsContainer.innerHTML = '';
+            
+            let correctAnswer = g1_questionType === 'color' ? g1_currentTarget.color.name : g1_currentTarget.shape.name;
+            let options = [correctAnswer];
+            let sourceList = g1_questionType === 'color' ? g1_colors : g1_shapes;
+
+            // Generate 3 wrong unique options
+            while (options.length < 4) {
+                let randomItem = sourceList[Math.floor(Math.random() * sourceList.length)].name;
+                if (!options.includes(randomItem)) {
+                    options.push(randomItem);
+                }
+            }
+
+            // Shuffle options
+            options.sort(() => Math.random() - 0.5);
+
+            options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = `btn-3d bg-white border-b-8 border-x-2 border-t-2 border-gray-200 text-gray-700 font-bold text-lg md:text-xl py-3 px-2 rounded-2xl shadow-sm hover:border-blue-400 hover:bg-blue-50 transition-all pop-in flex items-center justify-center text-center min-h-[4.5rem]`;
+                btn.style.animationDelay = `${0.1 * index}s`;
+                btn.innerText = opt;
+                btn.onclick = () => handleG1Answer(opt, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function handleG1Answer(selectedAnswer, btnElement) {
+            if (g1_isAnimating) return;
+            g1_isAnimating = true;
+
+            const correctAnswer = g1_questionType === 'color' ? g1_currentTarget.color.name : g1_currentTarget.shape.name;
+            const shapeEl = document.getElementById('g1-shape');
+
+            if (selectedAnswer === correctAnswer) {
+                // Benar
+                playSound('correct');
+                btnElement.classList.remove('border-gray-200', 'text-gray-700');
+                btnElement.classList.add('border-green-500', 'bg-green-100', 'text-green-700');
+                
+                // Animasi bentuk
+                shapeEl.style.transform = 'scale(1.2) rotate(10deg)';
+                setTimeout(() => shapeEl.style.transform = 'scale(1) rotate(0deg)', 300);
+
+                g1_score += 10;
+                updateG1Score();
+
+                if (g1_score >= 100 && g1_score % 100 === 0) {
+                    setTimeout(() => showWinModal(`Kamu mencapai skor ${g1_score}!`, '🌟', nextQuestionG1), 600);
+                } else {
+                    setTimeout(nextQuestionG1, 1000);
+                }
+            } else {
+                // Salah
+                playSound('wrong');
+                btnElement.classList.remove('border-gray-200');
+                btnElement.classList.add('border-red-500', 'bg-red-100', 'text-red-700');
+                
+                shapeEl.classList.add('shake');
+                setTimeout(() => {
+                    shapeEl.classList.remove('shake');
+                    btnElement.classList.remove('border-red-500', 'bg-red-100', 'text-red-700');
+                    btnElement.classList.add('border-gray-200', 'text-gray-700');
+                    g1_isAnimating = false;
+                }, 500);
+            }
+        }
+
+        // --- GAME 2 LOGIC: MEMORI HEWAN ---
+        const g2_animals = ['🦁', '🐯', '🐼', '🐨', '🐸', '🐵', '🐙', '🐢'];
+        let g2_cards = [];
+        let g2_hasFlippedCard = false;
+        let g2_lockBoard = false;
+        let g2_firstCard, g2_secondCard;
+        let g2_moves = 0;
+        let g2_matchedPairs = 0;
+
+        function initGame2() {
+            const board = document.getElementById('g2-board');
+            board.innerHTML = '';
+            g2_hasFlippedCard = false;
+            g2_lockBoard = false;
+            g2_firstCard = null;
+            g2_secondCard = null;
+            g2_moves = 0;
+            g2_matchedPairs = 0;
+            document.getElementById('g2-moves').innerText = g2_moves;
+            
+            // Buat pasangan kartu
+            g2_cards = [...g2_animals, ...g2_animals];
+            g2_cards.sort(() => Math.random() - 0.5);
+
+            g2_cards.forEach((animal, index) => {
+                const cardEl = document.createElement('div');
+                cardEl.classList.add('memory-card');
+                cardEl.dataset.animal = animal;
+                cardEl.style.animation = `popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) ${index * 0.03}s forwards`;
+                cardEl.style.opacity = '0';
+                cardEl.style.transform = 'scale(0)';
+
+                cardEl.innerHTML = `
+                    <div class="memory-card-inner">
+                        <div class="memory-card-front">${animal}</div>
+                        <div class="memory-card-back"></div>
+                    </div>
+                `;
+
+                cardEl.addEventListener('click', flipCard);
+                board.appendChild(cardEl);
+            });
+        }
+
+        function flipCard() {
+            if (g2_lockBoard) return;
+            if (this === g2_firstCard) return;
+            if (this.classList.contains('match')) return;
+
+            this.classList.add('flip');
+            playSound('flip');
+
+            if (!g2_hasFlippedCard) {
+                g2_hasFlippedCard = true;
+                g2_firstCard = this;
+                return;
+            }
+
+            g2_secondCard = this;
+            g2_moves++;
+            document.getElementById('g2-moves').innerText = g2_moves;
+            
+            checkG2Match();
+        }
+
+        function checkG2Match() {
+            let isMatch = g2_firstCard.dataset.animal === g2_secondCard.dataset.animal;
+
+            if (isMatch) {
+                playSound('match');
+                g2_firstCard.classList.add('match');
+                g2_secondCard.classList.add('match');
+                
+                g2_firstCard.removeEventListener('click', flipCard);
+                g2_secondCard.removeEventListener('click', flipCard);
+
+                g2_matchedPairs++;
+                
+                if (g2_matchedPairs === g2_animals.length) {
+                    setTimeout(() => {
+                        showWinModal(`Selesai dalam <br><span class="text-4xl text-pink-500">${g2_moves}</span> langkah!`, '🎉', initGame2);
+                    }, 500);
+                }
+                resetG2Board();
+            } else {
+                g2_lockBoard = true;
+                setTimeout(() => {
+                    g2_firstCard.classList.remove('flip');
+                    g2_secondCard.classList.remove('flip');
+                    resetG2Board();
+                }, 1000);
+            }
+        }
+
+        function resetG2Board() {
+            [g2_hasFlippedCard, g2_lockBoard] = [false, false];
+            [g2_firstCard, g2_secondCard] = [null, null];
+        }
+
+        // --- GAME 3 LOGIC: BEBASKAN PANAH ---
+        const g3_colors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6'];
+        const g3_dirs = ['up', 'down', 'left', 'right'];
+        let g3_grid = [];
+        let g3_cols = 4;
+        let g3_rows = 5;
+        let g3_level = 1;
+        let g3_blocksRemaining = 0;
+        let g3_isAnimating = false;
+
+        function getArrowSvg(dir) {
+            const rotation = { 'up': 0, 'right': 90, 'down': 180, 'left': 270 }[dir];
+            return `<svg viewBox="0 0 24 24" style="transform: rotate(${rotation}deg);">
+                <path d="M12 2L4 10H9V22H15V10H20L12 2Z" />
+            </svg>`;
+        }
+
+        function initGame3() {
+            document.getElementById('g3-level').innerText = g3_level;
+            
+            // Adjust grid size based on level (semakin tinggi level, ukuran semakin besar)
+            g3_cols = Math.min(4 + Math.floor((g3_level - 1) / 3), 8);
+            g3_rows = Math.min(5 + Math.floor((g3_level - 1) / 3), 10);
+            
+            generateG3Board();
+            renderG3Board();
+        }
+
+        function generateG3Board() {
+            g3_grid = Array(g3_rows).fill().map(() => Array(g3_cols).fill(null));
+            g3_blocksRemaining = 0;
+
+            let cells = [];
+            for(let r=0; r<g3_rows; r++) {
+                for(let c=0; c<g3_cols; c++) {
+                    cells.push({r, c});
+                }
+            }
+            cells.sort(() => Math.random() - 0.5); // Acak posisi untuk merender balok
+
+            // "Reverse Generation": Buat susunan balok dari kosong, pastikan mereka selalu punya jalan keluar
+            cells.forEach(cell => {
+                let dirsToTry = [...g3_dirs].sort(() => Math.random() - 0.5);
+                
+                for(let dir of dirsToTry) {
+                    if(canFlyOutG3(cell.c, cell.r, dir)) {
+                        g3_grid[cell.r][cell.c] = {
+                            dir: dir,
+                            color: g3_colors[Math.floor(Math.random() * g3_colors.length)],
+                            r: cell.r,
+                            c: cell.c
+                        };
+                        g3_blocksRemaining++;
+                        break; 
+                    }
+                }
+            });
+            
+            // Fallback jika kebetulan mendapat pola yang terlalu sedikit (kurang dari 4 balok)
+            if (g3_blocksRemaining < 4) {
+                generateG3Board(); 
+            }
+        }
+
+        function canFlyOutG3(c, r, dir) {
+            if (dir === 'up') {
+                for(let i=r-1; i>=0; i--) if(g3_grid[i][c]) return false;
+            } else if (dir === 'down') {
+                for(let i=r+1; i<g3_rows; i++) if(g3_grid[i][c]) return false;
+            } else if (dir === 'left') {
+                for(let i=c-1; i>=0; i--) if(g3_grid[r][i]) return false;
+            } else if (dir === 'right') {
+                for(let i=c+1; i<g3_cols; i++) if(g3_grid[r][i]) return false;
+            }
+            return true;
+        }
+
+        function renderG3Board() {
+            const board = document.getElementById('g3-board');
+            board.innerHTML = '';
+            
+            // Hitung ukuran balok agar presisi dan tidak menabrak batas layar bawah/samping
+            const maxContainerWidth = Math.min(window.innerWidth - 32, 500); // Max width di desktop
+            const maxContainerHeight = Math.min(window.innerHeight - 250, 600); // Sisakan ruang & max height
+            
+            // Evaluasi ukuran kotak yang paling pas agar grid tetap proposional
+            const sizeByWidth = Math.floor(maxContainerWidth / Math.max(g3_cols, 4));
+            const sizeByHeight = Math.floor(maxContainerHeight / Math.max(g3_rows, 5));
+            
+            const blockSize = Math.min(sizeByWidth, sizeByHeight);
+            const gap = 6; // Jarak/gap presisi pixel antar kotak
+            
+            board.style.width = `${blockSize * g3_cols}px`;
+            board.style.height = `${blockSize * g3_rows}px`;
+
+            for(let r=0; r<g3_rows; r++) {
+                for(let c=0; c<g3_cols; c++) {
+                    let blockData = g3_grid[r][c];
+                    if(blockData) {
+                        let btn = document.createElement('div');
+                        // flex items-center justify-center ditambahkan agar panah SVG presisi di tengah balok
+                        btn.className = `arrow-block pop-in flex items-center justify-center`;
+                        btn.style.width = `${blockSize - gap}px`;
+                        btn.style.height = `${blockSize - gap}px`;
+                        btn.style.left = `${c * blockSize + (gap/2)}px`;
+                        btn.style.top = `${r * blockSize + (gap/2)}px`;
+                        btn.style.backgroundColor = blockData.color;
+                        btn.style.animationDelay = `${(r+c) * 0.04}s`;
+                        
+                        btn.innerHTML = getArrowSvg(blockData.dir);
+                        
+                        btn.onclick = () => handleG3Click(blockData, btn);
+                        
+                        board.appendChild(btn);
+                        blockData.element = btn; 
+                    }
+                }
+            }
+        }
+
+        function handleG3Click(blockData, element) {
+            if (g3_isAnimating || !g3_grid[blockData.r][blockData.c]) return;
+
+            if (canFlyOutG3(blockData.c, blockData.r, blockData.dir)) {
+                // Berhasil terbang keluar (Jalur kosong)
+                playSound('swoosh');
+                element.classList.add(`anim-fly-${blockData.dir}`);
+                
+                // Hapus dari data grid
+                g3_grid[blockData.r][blockData.c] = null;
+                g3_blocksRemaining--;
+
+                // Hapus elemen dari DOM setelah animasi selesai
+                setTimeout(() => {
+                    element.remove();
+                    if (g3_blocksRemaining === 0) {
+                        handleG3Win();
+                    }
+                }, 400);
+
+            } else {
+                // Tertabrak balok lain (Goyang / Wobble)
+                playSound('bump');
+                element.classList.add('anim-wobble');
+                setTimeout(() => {
+                    element.classList.remove('anim-wobble');
+                }, 300);
+            }
+        }
+
+        function handleG3Win() {
+            g3_isAnimating = true;
+            setTimeout(() => {
+                showWinModal(`Hebat! Kamu menyelesaikan Level ${g3_level}!`, '🚀', () => {
+                    g3_level++; // Naik Level
+                    g3_isAnimating = false;
+                    initGame3();
+                });
+            }, 500);
+        }
+
+        // --- GAME 4 LOGIC: BERHITUNG CERIA ---
+        const g4_fruits = ['🍎', '🍓', '🍌', '🍉', '🍊', '🍇'];
+        let g4_score = 0;
+        let g4_targetAnswer = 0;
+        let g4_isAnimating = false;
+
+        function initGame4() {
+            g4_score = 0;
+            updateG4Score();
+            nextQuestionG4();
+        }
+
+        function updateG4Score() {
+            document.getElementById('g4-score').innerText = g4_score;
+        }
+
+        function nextQuestionG4() {
+            g4_isAnimating = false;
+            
+            // Pilih buah acak
+            const fruit = g4_fruits[Math.floor(Math.random() * g4_fruits.length)];
+            
+            // Angka 1 sampai 5 (cocok untuk PAUD/TK, maksimal hasil 10)
+            const num1 = Math.floor(Math.random() * 5) + 1;
+            const num2 = Math.floor(Math.random() * 5) + 1;
+            
+            g4_targetAnswer = num1 + num2;
+
+            // Render Visual Buah
+            const visualEl = document.getElementById('g4-visual');
+            visualEl.classList.remove('pop-in');
+            void visualEl.offsetWidth; // trigger reflow
+            
+            let html1 = Array(num1).fill(fruit).join('');
+            let html2 = Array(num2).fill(fruit).join('');
+            
+            visualEl.innerHTML = `
+                <div class="bg-white px-4 py-2 rounded-2xl shadow-sm border border-gray-100 flex">${html1}</div>
+                <div class="text-3xl text-orange-400 font-bold mx-2">+</div>
+                <div class="bg-white px-4 py-2 rounded-2xl shadow-sm border border-gray-100 flex">${html2}</div>
+            `;
+            visualEl.classList.add('pop-in');
+
+            // Render Persamaan
+            const eqEl = document.getElementById('g4-equation');
+            eqEl.innerText = `${num1} + ${num2} = ?`;
+            eqEl.className = "text-5xl md:text-6xl font-heading text-gray-700 mb-8 transition-transform duration-300";
+
+            generateG4Options();
+        }
+
+        function generateG4Options() {
+            const optionsContainer = document.getElementById('g4-options');
+            optionsContainer.innerHTML = '';
+            
+            let options = [g4_targetAnswer];
+
+            // Buat 3 opsi jawaban salah yang angkanya berdekatan (agar menantang tapi logis)
+            while (options.length < 4) {
+                // Rentang jawaban dari 2 sampai 11
+                let randomWrong = Math.floor(Math.random() * 10) + 2; 
+                if (!options.includes(randomWrong)) {
+                    options.push(randomWrong);
+                }
+            }
+
+            options.sort(() => Math.random() - 0.5);
+
+            options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = `btn-3d bg-white border-b-8 border-x-2 border-t-2 border-gray-200 text-orange-500 font-heading text-4xl md:text-5xl py-4 rounded-2xl shadow-sm hover:border-orange-400 hover:bg-orange-50 transition-all pop-in`;
+                btn.style.animationDelay = `${0.1 * index}s`;
+                btn.innerText = opt;
+                btn.onclick = () => handleG4Answer(opt, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function handleG4Answer(selectedAnswer, btnElement) {
+            if (g4_isAnimating) return;
+            g4_isAnimating = true;
+
+            const eqEl = document.getElementById('g4-equation');
+
+            if (selectedAnswer === g4_targetAnswer) {
+                // Jawaban Benar
+                playSound('correct');
+                btnElement.classList.replace('border-gray-200', 'border-green-500');
+                btnElement.classList.replace('text-orange-500', 'text-green-700');
+                btnElement.classList.add('bg-green-100');
+                
+                // Animasi Persamaan
+                eqEl.innerText = eqEl.innerText.replace('?', g4_targetAnswer);
+                eqEl.classList.remove('text-gray-700');
+                eqEl.classList.add('text-green-500', 'scale-110');
+
+                g4_score += 10;
+                updateG4Score();
+
+                if (g4_score >= 100 && g4_score % 100 === 0) {
+                    setTimeout(() => showWinModal(`Pintar! Kamu sudah bisa berhitung!`, '🌟', nextQuestionG4), 800);
+                } else {
+                    setTimeout(nextQuestionG4, 1200);
+                }
+            } else {
+                // Jawaban Salah
+                playSound('wrong');
+                btnElement.classList.replace('border-gray-200', 'border-red-500');
+                btnElement.classList.replace('text-orange-500', 'text-red-700');
+                btnElement.classList.add('bg-red-100', 'shake');
+                
+                setTimeout(() => {
+                    btnElement.classList.remove('shake', 'bg-red-100');
+                    btnElement.classList.replace('border-red-500', 'border-gray-200');
+                    btnElement.classList.replace('text-red-700', 'text-orange-500');
+                    g4_isAnimating = false;
+                }, 500);
+            }
+        }
+
+        // --- GAME 5 LOGIC: PENGURANGAN ---
+        const g5_items = ['🍕', '🍩', '🍪', '🍔'];
+        let g5_score = 0;
+        let g5_targetAnswer = 0;
+        let g5_isAnimating = false;
+
+        function initGame5() {
+            g5_score = 0;
+            document.getElementById('g5-score').innerText = g5_score;
+            nextQuestionG5();
+        }
+
+        function nextQuestionG5() {
+            g5_isAnimating = false;
+            const item = g5_items[Math.floor(Math.random() * g5_items.length)];
+            
+            // Logika PAUD/SD 1: Angka awal maks 10.
+            const num1 = Math.floor(Math.random() * 8) + 3; // 3 sampai 10
+            const num2 = Math.floor(Math.random() * (num1 - 1)) + 1; // 1 sampai num1-1
+            
+            g5_targetAnswer = num1 - num2;
+
+            const visualEl = document.getElementById('g5-visual');
+            visualEl.classList.remove('pop-in');
+            void visualEl.offsetWidth; 
+            
+            let html1 = Array(num1).fill(item).join('');
+            let html2 = Array(num2).fill(item).join('');
+            
+            visualEl.innerHTML = `
+                <div class="bg-white px-4 py-2 rounded-2xl shadow-sm border border-gray-100 flex flex-wrap justify-center">${html1}</div>
+                <div class="text-3xl text-rose-400 font-bold mx-2">➖</div>
+                <div class="bg-white px-4 py-2 rounded-2xl shadow-sm border border-gray-100 flex flex-wrap justify-center opacity-40 grayscale">${html2}</div>
+            `;
+            visualEl.classList.add('pop-in');
+
+            const eqEl = document.getElementById('g5-equation');
+            eqEl.innerText = `${num1} - ${num2} = ?`;
+            eqEl.className = "text-5xl md:text-6xl font-heading text-gray-700 mb-8 transition-transform duration-300";
+
+            generateG5Options();
+        }
+
+        function generateG5Options() {
+            const container = document.getElementById('g5-options');
+            container.innerHTML = '';
+            let options = [g5_targetAnswer];
+
+            while (options.length < 4) {
+                let randomWrong = Math.floor(Math.random() * 10); 
+                if (!options.includes(randomWrong)) options.push(randomWrong);
+            }
+            options.sort(() => Math.random() - 0.5);
+
+            options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = `btn-3d bg-white border-b-8 border-x-2 border-t-2 border-gray-200 text-rose-500 font-heading text-4xl md:text-5xl py-4 rounded-2xl shadow-sm hover:border-rose-400 hover:bg-rose-50 transition-all pop-in`;
+                btn.style.animationDelay = `${0.1 * index}s`;
+                btn.innerText = opt;
+                btn.onclick = () => handleG5Answer(opt, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function handleG5Answer(ans, btn) {
+            if (g5_isAnimating) return;
+            g5_isAnimating = true;
+            const eqEl = document.getElementById('g5-equation');
+
+            if (ans === g5_targetAnswer) {
+                playSound('correct');
+                btn.classList.replace('border-gray-200', 'border-green-500');
+                btn.classList.replace('text-rose-500', 'text-green-700');
+                btn.classList.add('bg-green-100');
+                
+                eqEl.innerText = eqEl.innerText.replace('?', g5_targetAnswer);
+                eqEl.classList.remove('text-gray-700');
+                eqEl.classList.add('text-green-500', 'scale-110');
+
+                g5_score += 10;
+                document.getElementById('g5-score').innerText = g5_score;
+
+                if (g5_score >= 100 && g5_score % 100 === 0) {
+                    setTimeout(() => showWinModal(`Hebat! Kamu bisa pengurangan!`, '🌟', nextQuestionG5), 800);
+                } else {
+                    setTimeout(nextQuestionG5, 1200);
+                }
+            } else {
+                playSound('wrong');
+                btn.classList.replace('border-gray-200', 'border-red-500');
+                btn.classList.replace('text-rose-500', 'text-red-700');
+                btn.classList.add('bg-red-100', 'shake');
+                setTimeout(() => {
+                    btn.classList.remove('shake', 'bg-red-100');
+                    btn.classList.replace('border-red-500', 'border-gray-200');
+                    btn.classList.replace('text-red-700', 'text-rose-500');
+                    g5_isAnimating = false;
+                }, 500);
+            }
+        }
+
+        // --- GAME 6 LOGIC: PERKALIAN ---
+        const g6_items = ['⭐', '🍬', '🎈'];
+        let g6_score = 0;
+        let g6_targetAnswer = 0;
+        let g6_isAnimating = false;
+
+        function initGame6() {
+            g6_score = 0;
+            document.getElementById('g6-score').innerText = g6_score;
+            nextQuestionG6();
+        }
+
+        function nextQuestionG6() {
+            g6_isAnimating = false;
+            const item = g6_items[Math.floor(Math.random() * g6_items.length)];
+            
+            // PAUD/SD 1: Perkalian sangat kecil (1x hingga 4x, hasil maks 16)
+            const num1 = Math.floor(Math.random() * 4) + 1; // 1-4 kelompok
+            const num2 = Math.floor(Math.random() * 4) + 1; // 1-4 isi per kelompok
+            
+            g6_targetAnswer = num1 * num2;
+
+            const visualEl = document.getElementById('g6-visual');
+            visualEl.classList.remove('pop-in');
+            void visualEl.offsetWidth; 
+            
+            let boxesHtml = '';
+            for(let i=0; i<num1; i++) {
+                let insideHtml = Array(num2).fill(item).join('');
+                boxesHtml += `<div class="bg-white px-3 py-2 rounded-xl shadow-md border-2 border-indigo-200 flex flex-wrap justify-center items-center text-2xl min-w-[3rem] min-h-[3rem]">${insideHtml}</div>`;
+            }
+            
+            visualEl.innerHTML = boxesHtml;
+            visualEl.classList.add('pop-in');
+
+            const eqEl = document.getElementById('g6-equation');
+            eqEl.innerText = `${num1} x ${num2} = ?`;
+            eqEl.className = "text-5xl md:text-6xl font-heading text-gray-700 mb-8 transition-transform duration-300";
+
+            generateG6Options();
+        }
+
+        function generateG6Options() {
+            const container = document.getElementById('g6-options');
+            container.innerHTML = '';
+            let options = [g6_targetAnswer];
+
+            while (options.length < 4) {
+                let randomWrong = Math.floor(Math.random() * 16) + 1; 
+                if (!options.includes(randomWrong)) options.push(randomWrong);
+            }
+            options.sort(() => Math.random() - 0.5);
+
+            options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = `btn-3d bg-white border-b-8 border-x-2 border-t-2 border-gray-200 text-indigo-500 font-heading text-4xl md:text-5xl py-4 rounded-2xl shadow-sm hover:border-indigo-400 hover:bg-indigo-50 transition-all pop-in`;
+                btn.style.animationDelay = `${0.1 * index}s`;
+                btn.innerText = opt;
+                btn.onclick = () => handleG6Answer(opt, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function handleG6Answer(ans, btn) {
+            if (g6_isAnimating) return;
+            g6_isAnimating = true;
+            const eqEl = document.getElementById('g6-equation');
+
+            if (ans === g6_targetAnswer) {
+                playSound('correct');
+                btn.classList.replace('border-gray-200', 'border-green-500');
+                btn.classList.replace('text-indigo-500', 'text-green-700');
+                btn.classList.add('bg-green-100');
+                
+                eqEl.innerText = eqEl.innerText.replace('?', g6_targetAnswer);
+                eqEl.classList.remove('text-gray-700');
+                eqEl.classList.add('text-green-500', 'scale-110');
+
+                g6_score += 10;
+                document.getElementById('g6-score').innerText = g6_score;
+
+                if (g6_score >= 100 && g6_score % 100 === 0) {
+                    setTimeout(() => showWinModal(`Luar biasa! Perkalian itu menyenangkan!`, '🌟', nextQuestionG6), 800);
+                } else {
+                    setTimeout(nextQuestionG6, 1200);
+                }
+            } else {
+                playSound('wrong');
+                btn.classList.replace('border-gray-200', 'border-red-500');
+                btn.classList.replace('text-indigo-500', 'text-red-700');
+                btn.classList.add('bg-red-100', 'shake');
+                setTimeout(() => {
+                    btn.classList.remove('shake', 'bg-red-100');
+                    btn.classList.replace('border-red-500', 'border-gray-200');
+                    btn.classList.replace('text-red-700', 'text-indigo-500');
+                    g6_isAnimating = false;
+                }, 500);
+            }
+        }
+
+        // --- GAME 7 LOGIC: PEMBAGIAN ---
+        const g7_items = ['🍰', '🍎', '🍓'];
+        let g7_score = 0;
+        let g7_targetAnswer = 0;
+        let g7_isAnimating = false;
+
+        function initGame7() {
+            g7_score = 0;
+            document.getElementById('g7-score').innerText = g7_score;
+            nextQuestionG7();
+        }
+
+        function nextQuestionG7() {
+            g7_isAnimating = false;
+            const item = g7_items[Math.floor(Math.random() * g7_items.length)];
+            
+            // PAUD/SD 1: Pembagian sederhana dan pas. Target jawaban per piring 1-4.
+            g7_targetAnswer = Math.floor(Math.random() * 4) + 1; 
+            const divisor = Math.floor(Math.random() * 3) + 2; // Dibagi ke 2, 3, atau 4 orang piring
+            const total = g7_targetAnswer * divisor; // Total awal (maksimal 16)
+
+            const visualEl = document.getElementById('g7-visual');
+            visualEl.classList.remove('pop-in');
+            void visualEl.offsetWidth; 
+            
+            let totalHtml = Array(total).fill(item).join('');
+            let platesHtml = '';
+            for(let i=0; i<divisor; i++) {
+                platesHtml += `<div class="bg-white/70 border-4 border-dashed border-teal-400 w-16 h-16 rounded-full flex items-center justify-center text-2xl shadow-inner">🍽️</div>`;
+            }
+            
+            visualEl.innerHTML = `
+                <div class="flex flex-wrap justify-center text-3xl px-4 bg-white/50 py-2 rounded-xl">${totalHtml}</div>
+                <div class="text-xl md:text-2xl text-teal-600 font-bold bg-teal-100 px-4 py-1 rounded-full">⬇️ Dibagi ke ${divisor} Piring ⬇️</div>
+                <div class="flex gap-4 justify-center">${platesHtml}</div>
+            `;
+            visualEl.classList.add('pop-in');
+
+            const eqEl = document.getElementById('g7-equation');
+            eqEl.innerText = `${total} ÷ ${divisor} = ?`;
+            eqEl.className = "text-5xl md:text-6xl font-heading text-gray-700 mb-8 transition-transform duration-300";
+
+            generateG7Options();
+        }
+
+        function generateG7Options() {
+            const container = document.getElementById('g7-options');
+            container.innerHTML = '';
+            let options = [g7_targetAnswer];
+
+            while (options.length < 4) {
+                let randomWrong = Math.floor(Math.random() * 8) + 1; 
+                if (!options.includes(randomWrong)) options.push(randomWrong);
+            }
+            options.sort(() => Math.random() - 0.5);
+
+            options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = `btn-3d bg-white border-b-8 border-x-2 border-t-2 border-gray-200 text-teal-500 font-heading text-4xl md:text-5xl py-4 rounded-2xl shadow-sm hover:border-teal-400 hover:bg-teal-50 transition-all pop-in`;
+                btn.style.animationDelay = `${0.1 * index}s`;
+                btn.innerText = opt;
+                btn.onclick = () => handleG7Answer(opt, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function handleG7Answer(ans, btn) {
+            if (g7_isAnimating) return;
+            g7_isAnimating = true;
+            const eqEl = document.getElementById('g7-equation');
+
+            if (ans === g7_targetAnswer) {
+                playSound('correct');
+                btn.classList.replace('border-gray-200', 'border-green-500');
+                btn.classList.replace('text-teal-500', 'text-green-700');
+                btn.classList.add('bg-green-100');
+                
+                eqEl.innerText = eqEl.innerText.replace('?', g7_targetAnswer);
+                eqEl.classList.remove('text-gray-700');
+                eqEl.classList.add('text-green-500', 'scale-110');
+
+                g7_score += 10;
+                document.getElementById('g7-score').innerText = g7_score;
+
+                if (g7_score >= 100 && g7_score % 100 === 0) {
+                    setTimeout(() => showWinModal(`Wah! Kamu pintar berbagi dengan adil!`, '🌟', nextQuestionG7), 800);
+                } else {
+                    setTimeout(nextQuestionG7, 1200);
+                }
+            } else {
+                playSound('wrong');
+                btn.classList.replace('border-gray-200', 'border-red-500');
+                btn.classList.replace('text-teal-500', 'text-red-700');
+                btn.classList.add('bg-red-100', 'shake');
+                setTimeout(() => {
+                    btn.classList.remove('shake', 'bg-red-100');
+                    btn.classList.replace('border-red-500', 'border-gray-200');
+                    btn.classList.replace('text-red-700', 'text-teal-500');
+                    g7_isAnimating = false;
+                }, 500);
+            }
+        }
+
+        // --- GAME 8 LOGIC: DINO BERLARI ---
+        let g8_canvas, g8_ctx;
+        let g8_dino = { x: 50, y: 0, w: 50, h: 50, dy: 0, jumpPower: -16, gravity: 0.8, grounded: true };
+        let g8_obstacles = [];
+        let g8_speed = 5;
+        let g8_score = 0;
+        let g8_animId;
+        let g8_isGameOver = false;
+        let g8_frameCount = 0;
+        
+        // Rintangan: Kaktus, Kucing, Pohon Kecil, Tong Sampah
+        const g8_obsTypes = ['🌵', '🐈', '🌳', '🗑️'];
+        const G8_GROUND_Y = 220;
+        const G8_CANVAS_W = 800;
+        const G8_CANVAS_H = 300;
+
+        function initGame8() {
+            g8_canvas = document.getElementById('dino-canvas');
+            // Tetapkan resolusi internal canvas agar tajam dan ukurannya konsisten
+            g8_canvas.width = G8_CANVAS_W;
+            g8_canvas.height = G8_CANVAS_H;
+            g8_ctx = g8_canvas.getContext('2d');
+            
+            g8_dino.y = G8_GROUND_Y - g8_dino.h;
+            g8_dino.dy = 0;
+            g8_dino.grounded = true;
+            
+            g8_obstacles = [];
+            g8_speed = 6;
+            g8_score = 0;
+            g8_frameCount = 0;
+            g8_isGameOver = false;
+            document.getElementById('g8-score').innerText = g8_score;
+            
+            if(g8_animId) cancelAnimationFrame(g8_animId);
+            g8_loop();
+        }
+
+        function g8_jump() {
+            // Mencegah trigger saat animasi modal selesai
+            if (document.getElementById('win-modal').classList.contains('flex')) return;
+            
+            if (g8_isGameOver) return; // Tunggu modal
+            
+            if (g8_dino.grounded) {
+                playSound('swoosh');
+                g8_dino.dy = g8_dino.jumpPower;
+                g8_dino.grounded = false;
+            }
+        }
+
+        // Event listener tambahan untuk spasi di keyboard (Desktop)
+        window.addEventListener('keydown', (e) => {
+            if (currentActiveScreen === 'screen-game8' && (e.code === 'Space' || e.code === 'ArrowUp')) {
+                g8_jump();
+                e.preventDefault(); // Mencegah layar scroll ke bawah
+            }
+        });
+
+        function g8_loop() {
+            if (g8_isGameOver) return;
+            g8_animId = requestAnimationFrame(g8_loop);
+            
+            // Bersihkan frame sebelumnya
+            g8_ctx.clearRect(0, 0, G8_CANVAS_W, G8_CANVAS_H);
+            
+            // Latar Belakang (Awan statis untuk estetika)
+            g8_ctx.font = '40px sans-serif';
+            g8_ctx.fillText('☁️', 150, 60);
+            g8_ctx.fillText('☁️', 550, 80);
+            g8_ctx.fillText('☀️', 700, 50);
+            
+            // --- Fisika Dino ---
+            g8_dino.dy += g8_dino.gravity;
+            g8_dino.y += g8_dino.dy;
+            
+            // Deteksi tabrakan dengan tanah
+            if (g8_dino.y >= G8_GROUND_Y - g8_dino.h) {
+                g8_dino.y = G8_GROUND_Y - g8_dino.h;
+                g8_dino.dy = 0;
+                g8_dino.grounded = true;
+            }
+            
+            // Gambar Tanah
+            g8_ctx.beginPath();
+            g8_ctx.moveTo(0, G8_GROUND_Y);
+            g8_ctx.lineTo(G8_CANVAS_W, G8_GROUND_Y);
+            g8_ctx.strokeStyle = '#84cc16'; // hijau muda Tailwind (lime-500)
+            g8_ctx.lineWidth = 6;
+            g8_ctx.stroke();
+            
+            // Gambar Dino (Di-flip agar menghadap ke kanan)
+            g8_ctx.save();
+            // Pindahkan titik pusat ke tengah-tengah dinosaurus
+            g8_ctx.translate(g8_dino.x + g8_dino.w / 2, g8_dino.y + g8_dino.h / 2);
+            // Balik sumbu X
+            g8_ctx.scale(-1, 1);
+            g8_ctx.font = '50px sans-serif';
+            g8_ctx.textBaseline = 'middle';
+            g8_ctx.textAlign = 'center';
+            // Gambar emoji tepat di titik pusat yang baru
+            g8_ctx.fillText('🦖', 0, 0);
+            g8_ctx.restore();
+            
+            // --- Logika Rintangan ---
+            g8_frameCount++;
+            // Hitung interval kemunculan secara acak agar menantang
+            let spawnInterval = Math.max(60, 120 - (g8_speed * 5)); 
+            if (g8_frameCount % Math.floor(Math.random() * 40 + spawnInterval) === 0) {
+                let type = g8_obsTypes[Math.floor(Math.random() * g8_obsTypes.length)];
+                let w = 45; // Hitbox sedikit lebih kecil dari font
+                let h = 45;
+                // Pastikan jarak minimal antar rintangan agar bisa dilompati
+                let lastObs = g8_obstacles[g8_obstacles.length - 1];
+                if (!lastObs || (G8_CANVAS_W - lastObs.x > 250)) {
+                    g8_obstacles.push({ x: G8_CANVAS_W, y: G8_GROUND_Y - h, w: w, h: h, type: type, passed: false });
+                }
+            }
+            
+            for (let i = 0; i < g8_obstacles.length; i++) {
+                let obs = g8_obstacles[i];
+                obs.x -= g8_speed;
+                
+                // Gambar Rintangan
+                g8_ctx.font = '45px sans-serif';
+                g8_ctx.textBaseline = 'bottom'; // Memastikan jangkar gambar ada di batas paling bawah
+                g8_ctx.textAlign = 'left';
+                // Digambar tepat menyentuh garis tanah (G8_GROUND_Y), ditambah sedikit offset agar tidak terlihat mengambang
+                g8_ctx.fillText(obs.type, obs.x, G8_GROUND_Y + 8); 
+                
+                // Deteksi Tabrakan (AABB) -> Dengan Hitbox Padding agar lebih pemaaf (ramah anak)
+                let padding = 15; 
+                if (g8_dino.x < obs.x + obs.w - padding &&
+                    g8_dino.x + g8_dino.w > obs.x + padding &&
+                    g8_dino.y < obs.y + obs.h - padding &&
+                    g8_dino.y + g8_dino.h > obs.y + padding) {
+                    
+                    // Game Over!
+                    g8_isGameOver = true;
+                    playSound('bump');
+                    setTimeout(() => {
+                        showWinModal(`Aduh menabrak!<br>Skor Akhir: ${g8_score}`, '💥', initGame8);
+                    }, 300);
+                }
+                
+                // Tambah Skor jika rintangan dilewati
+                if (obs.x + obs.w < g8_dino.x && !obs.passed) {
+                    obs.passed = true;
+                    g8_score += 10;
+                    document.getElementById('g8-score').innerText = g8_score;
+                    
+                    // Tingkatkan kecepatan setiap 50 poin, maksimal kecepatan 12
+                    if (g8_score % 50 === 0 && g8_speed < 12) {
+                        g8_speed += 0.8; 
+                        playSound('correct'); // Suara indikator level naik
+                    }
+                }
+            }
+            
+            // Hapus rintangan yang sudah keluar dari layar kiri
+            g8_obstacles = g8_obstacles.filter(o => o.x + o.w > -50);
+        }
+
+    </script>
+</body>
+</html>
